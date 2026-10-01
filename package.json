@@ -1,0 +1,38 @@
+{
+  "name": "capu",
+  "version": "1.0.0",
+  "description": "Capu, la mascota de Deiza Code: un capullo de rosa pixel art animado por código, sin dependencias.",
+  "main": "src/capu.js",
+  "module": "src/capu.mjs",
+  "exports": {
+    ".": {
+      "import": "./src/capu.mjs",
+      "require": "./src/capu.js"
+    },
+    "./terminal": "./terminal/capu-terminal.js"
+  },
+  "files": [
+    "src",
+    "terminal",
+    "assets"
+  ],
+  "scripts": {
+    "assets": "node scripts/build-assets.js && node scripts/build-art.js && node scripts/build-gallery.js",
+    "demo": "node terminal/demo.js"
+  },
+  "keywords": [
+    "deiza",
+    "mascot",
+    "pixel-art",
+    "svg",
+    "animation",
+    "terminal"
+  ],
+  "author": "Marcos de Aza",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/marcosdeaza/capu.git"
+  },
+  "homepage": "https://marcosdeaza.github.io/capu/"
+}
