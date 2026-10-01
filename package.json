@@ -1,6 +1,6 @@
 {
   "name": "capu",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Capu, la mascota de Deiza Code: un capullo de rosa pixel art animado por código, sin dependencias.",
   "main": "src/capu.js",
   "module": "src/capu.mjs",

@@ -23,7 +23,7 @@
   h1 { font: 400 64px/1 'Playfair Display', Georgia, serif; margin: 0; letter-spacing: -.01em; }
   .lede { color: var(--muted); max-width: 640px; margin: 14px 0 0; font-size: 16px; }
   .lede a { color: var(--fg); }
-  .stage-wrap { margin: 44px 0 10px; padding: 90px 28px 28px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; position: relative; overflow: hidden; }
+  .stage-wrap { margin: 44px 0 10px; padding: 150px 28px 28px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; position: relative; overflow: hidden; }
   .bar { position: relative; height: 92px; border-radius: 18px; border: 1px solid var(--line); background: var(--bg); }
   .bar .ph { position: absolute; left: 20px; top: 18px; color: var(--faint); }
   #capu { position: absolute; bottom: calc(100% - 3px); left: 60%; line-height: 0; cursor: pointer; transition: none; }
@@ -43,7 +43,7 @@
   pre { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; overflow: auto; font: 13px/1.55 'JetBrains Mono', monospace; }
   footer { margin-top: 56px; color: var(--faint); font-size: 13px; }
   footer a { color: var(--muted); }
-  @media (max-width: 600px) { h1 { font-size: 46px; } .stage-wrap { padding: 90px 14px 14px; } }
+  @media (max-width: 600px) { h1 { font-size: 46px; } .stage-wrap { padding: 150px 14px 14px; } }
 </style>
 </head>
 <body>
@@ -61,7 +61,7 @@
 
   <div class="lbl">Interruptores</div>
   <div class="row">
-    <button id="ssj" aria-pressed="false">Omnisciente (Super Saiyan)</button>
+    <button id="ssj">Omnisciente (Super Saiyan)</button>
     <button id="walk">Pasear</button>
     <button id="theme">Claro / oscuro</button>
   </div>
@@ -76,8 +76,7 @@
   const player = new Capu.Player(document.getElementById('capu'), { px: 3 });
   const director = new Capu.Director(player);
   director.set('writing');          // thinking, reading, running, web, npm, git, tests…
-  director.react('saiyan');         // una reacción y vuelve a lo que hacía
-  Capu.setMod({ saiyan: true });    // pelo dorado y aura en todas las escenas
+  director.react('saiyan');         // transformación de unos segundos y vuelve a lo que hacía
 &lt;/script&gt;</pre>
 
   <footer>Hecho por <a href="https://github.com/marcosdeaza">Marcos de Aza</a> para <a href="https://deiza.org">Deiza</a>. Código y sprites bajo licencia MIT: <a href="https://github.com/marcosdeaza/capu">github.com/marcosdeaza/capu</a>.</footer>
@@ -117,14 +116,7 @@
     grid.append(cell);
   }
 
-  const ssj = document.getElementById('ssj');
-  ssj.onclick = () => {
-    const on = ssj.getAttribute('aria-pressed') !== 'true';
-    ssj.setAttribute('aria-pressed', String(on));
-    if (on) director.react('saiyan', () => Capu.setMod({ saiyan: true }));
-    else { Capu.setMod({ saiyan: false }); director.react('calm'); }
-    show(on ? 'saiyan' : 'calm');
-  };
+  document.getElementById('ssj').onclick = () => { director.react('saiyan', () => show(director.state)); show('saiyan'); };
 
   let x = null, walking = false;
   const range = () => { const W = el.parentElement.clientWidth; return [Math.round(W * 0.05), W - STAND.w * 3 + 10]; };

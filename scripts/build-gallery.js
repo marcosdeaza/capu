@@ -6,11 +6,9 @@ const path = require('path');
 const OUT = path.join(__dirname, '..', 'assets', 'scenes');
 fs.mkdirSync(OUT, { recursive: true });
 
-function animated(name, px, mod) {
-  C.setMod(mod || { saiyan: false });
+function animated(name, px) {
   const box = C.centeredBox([name], 1);
   const frames = C.SCENES[name].frames.map((f, i) => [f[0], C.frameAt(name, i)]);
-  C.setMod({ saiyan: false });
   const total = frames.reduce((a, f) => a + f[0], 0);
   let t = 0, groups = '', css = '';
   frames.forEach(([ms, g], k) => {
@@ -24,6 +22,4 @@ function animated(name, px, mod) {
 }
 const names = Object.keys(C.SCENES);
 for (const n of names) fs.writeFileSync(path.join(OUT, `${n}.svg`), animated(n, 5));
-fs.writeFileSync(path.join(OUT, 'idle-saiyan.svg'), animated('idle', 5, { saiyan: true }));
-fs.writeFileSync(path.join(OUT, 'typing-saiyan.svg'), animated('typing', 5, { saiyan: true }));
-console.log(names.length + 2, 'animated scenes in', OUT);
+console.log(names.length, 'animated scenes in', OUT);

@@ -46,8 +46,8 @@ Hay 44 escenas, todas generadas por código desde [`src/capu.js`](src/capu.js). 
 | <img src="assets/scenes/focus.svg" height="90" alt="focus"> | <img src="assets/scenes/water.svg" height="90" alt="water"> | <img src="assets/scenes/stretch.svg" height="90" alt="stretch"> | <img src="assets/scenes/phone.svg" height="90" alt="phone"> | <img src="assets/scenes/sleep.svg" height="90" alt="sleep"> | <img src="assets/scenes/wilt.svg" height="90" alt="wilt"> |
 | `focus` | `water` | `stretch` | `phone` | `sleep` | `wilt` |
 
-<p align="center"><img src="assets/scenes/idle-saiyan.svg" height="110" alt="Capu en modo Omnisciente"> <img src="assets/scenes/typing-saiyan.svg" height="110" alt="Capu programando en modo Omnisciente"></p>
-<p align="center">Con el esfuerzo en Omnisciente se queda con el pelo dorado y el aura en todas las escenas.</p>
+<p align="center"><img src="assets/scenes/saiyan.svg" height="260" alt="Capu se transforma en Super Saiyan"></p>
+<p align="center">Al subir el esfuerzo a Omnisciente: carga, estalla en un aura de llamas que se sale del escenario, chispea un segundo y medio y vuelve a la normalidad. Es un momento, no un modo.</p>
 
 ## Cómo está hecho
 
@@ -68,8 +68,7 @@ En el navegador o en Electron:
   const player = new Capu.Player(document.getElementById('capu'), { px: 3 });
   const director = new Capu.Director(player);
   director.set('writing');          // idle, thinking, writing, reading, running, web, npm, git, tests, approval…
-  director.react('saiyan');         // una reacción y vuelve a lo que estaba haciendo
-  Capu.setMod({ saiyan: true });    // pelo dorado y aura en todas las escenas
+  director.react('saiyan');         // la transformación y vuelve a lo que estaba haciendo
 </script>
 ```
 
@@ -103,13 +102,12 @@ console.log(Capu.toANSI(Capu.frameAt('idle', 0)).join('\n'));
 |---|---|
 | `Capu.frame(scene, t)` | Rejilla de colores del instante `t` (ms) de una escena |
 | `Capu.frameAt(scene, i)` | El fotograma `i` |
-| `Capu.toSVG(grid, { px, crop, mono, fluid, title })` | SVG pixel-perfect |
+| `Capu.toSVG(grid, { px, crop, mono, fluid, title, bleed })` | SVG pixel-perfect; `bleed` dibuja también lo que se sale del recorte |
 | `Capu.toANSI(grid, { crop, indent })` | Líneas para la terminal (medios bloques, color real) |
 | `Capu.base({ eyes, top })` | La silueta base 8×10 |
 | `Capu.sceneBox(names, pad)` / `centeredBox(names, pad)` | Recorte que contiene todos los fotogramas |
-| `new Capu.Player(el, { px, crop, scene })` | Anima dentro de un elemento: `play(scene, onEnd)`, `stop()` |
+| `new Capu.Player(el, { px, crop, scene, bleed })` | Anima dentro de un elemento: `play(scene, onEnd)`, `stop()`. Las escenas `fx` (como `saiyan`) se salen de su caja; `bleed: false` las recorta |
 | `new Capu.Director(player, { sleepAfter })` | `set(state)`, `react(scene, after)`, `poke()`, `pause()`, `resume()` |
-| `Capu.setMod({ saiyan })` | Modificadores globales de aspecto |
 
 ## Regenerar los assets
 
