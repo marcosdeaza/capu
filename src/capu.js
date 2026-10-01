@@ -1250,7 +1250,7 @@
     return this;
   };
   Player.prototype._render = function (i) {
-    this.el.innerHTML = toSVG(frameAt(this.scene, i), { px: this.opts.px, crop: this.opts.crop || undefined, fluid: this.opts.fluid, bleed: this.opts.bleed !== false });
+    this.el.innerHTML = toSVG(frameAt(this.scene, i), { px: this.opts.px, crop: this.opts.crop || undefined, fluid: this.opts.fluid, bleed: this.opts.bleed !== false && !!S[this.scene].fx });
   };
   Player.prototype._tick = function () {
     clearTimeout(this.timer);
