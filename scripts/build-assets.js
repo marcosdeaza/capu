@@ -43,10 +43,12 @@ const all = C.sceneBox(Object.keys(C.SCENES));
 for (const [n, i, label] of POSES) fs.writeFileSync(path.join(OUT, 'poses', `${n}-${i}.svg`), C.toSVG(C.frameAt(n, i), { px: 6, crop: C.SCENES[n].fx ? C.sceneBox([n]) : all, title: `Capu: ${label}` }));
 
 // 4. self-contained animated SVG: frames stacked, shown one at a time with CSS steps
-function animated(scenes, name, px) {
-  const box = C.sceneBox(scenes);
+// scenes: names, or [name, form, from] to draw them as Gas / Liquid / Solid
+function animated(scenes, name, px, crop) {
+  const list = scenes.map((s) => (Array.isArray(s) ? s : [s]));
+  const box = crop || C.sceneBox(list.map((s) => s[0]));
   const frames = [];
-  for (const s of scenes) C.SCENES[s].frames.forEach((f, i) => frames.push([f[0], C.frameAt(s, i)]));
+  for (const [s, form, from] of list) C.SCENES[s].frames.forEach((f, i) => frames.push([f[0], C.frameAt(s, i, form, from)]));
   const total = frames.reduce((a, f) => a + f[0], 0);
   let t = 0, groups = '', css = '';
   frames.forEach(([ms, g], k) => {
@@ -65,10 +67,29 @@ console.log('idle', animated(['idle'], 'capu-idle.svg', 6));
 console.log('typing', animated(['typing'], 'capu-typing.svg', 6));
 console.log('bloom', animated(['hello', 'idle', 'bloom'], 'capu-hello.svg', 6));
 
-// 5. terminal banner (for README / docs)
+// 5. one Capu per model family: Gas (small and violet), Liquid (the usual one), Solid (a cut garnet)
+const FORMS = ['gas', 'liquid', 'solid'];
+fs.mkdirSync(path.join(OUT, 'forms'), { recursive: true });
+const formBox = C.sceneBox(['idle'], 1, FORMS);
+const formSVG = (f, px) => C.toSVG(C.frameAt('idle', 0, f), { px, crop: formBox, title: `Capu ${f}` });
+for (const f of FORMS) w(`forms/${f}.svg`, formSVG(f, 8));
+{
+  const gap = 6, inner = (f) => formSVG(f, 1).replace(/^<svg[^>]*>(<title>[^<]*<\/title>)?/, '').replace(/<\/svg>$/, '');
+  const groups = FORMS.map((f, i) => `<g transform="translate(${i * (formBox.w + gap)} 0)">${inner(f)}</g>`).join('');
+  const vw = formBox.w * 3 + gap * 2;
+  w('capu-forms-still.svg', `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${vw} ${formBox.h}" width="${vw * 6}" height="${formBox.h * 6}" shape-rendering="crispEdges" role="img"><title>Capu: Gas, Liquid y Solid</title>${groups}</svg>`);
+}
+// changing model: Liquid evolves into Solid, Solid into Gas, Gas back into Liquid
+const reelBox = C.centeredBox(['idle', 'gas', 'liquid', 'solid', 'hello'], 1, FORMS);
+console.log('forms', animated([
+  ['idle', 'liquid'], ['evolve', 'solid', 'liquid'], ['solid', 'solid'], ['idle', 'solid'],
+  ['evolve', 'gas', 'solid'], ['gas', 'gas'], ['idle', 'gas'], ['evolve', 'liquid', 'gas'], ['liquid', 'liquid'],
+], 'capu-forms.svg', 6, reelBox));
+
+// 6. terminal banner (for README / docs)
 w('capu.ansi.txt', C.toANSI(C.frameAt('idle', 0), {}).join('\n') + '\n');
 
-// 6. character sheet (HTML → PNG by the caller)
+// 7. character sheet (HTML → PNG by the caller)
 let sheet = `<!doctype html><meta charset=utf-8><title>Capu</title><style>
 @font-face{font-family:Play;src:local('Playfair Display')}
 body{margin:0;background:#1d1a19;color:#e9e1d6;font:14px/1.5 -apple-system,system-ui;padding:56px 64px;width:1280px;box-sizing:border-box}
@@ -78,7 +99,7 @@ figure svg{width:100%;height:auto} figcaption{color:#8d837a;font-size:12px}
 .row{display:flex;gap:28px;align-items:flex-end;margin:0 0 44px} .row div{display:flex;flex-direction:column;align-items:center;gap:8px;color:#8d837a;font-size:12px}
 .cream{background:#efe7dc;border-radius:10px;padding:14px}
 .pal{display:flex;gap:10px;margin-top:40px} .sw{width:120px} .sw i{display:block;height:56px;border-radius:8px;margin-bottom:6px}
-</style><h1>Capu</h1><p class=lede>La mascota de Deiza Code. Un capullo de rosa hecho bloque: ocho píxeles de ancho, el pétalo izquierdo más alto y dos ojos que son huecos. Le brotan brazos de hoja cuando necesita coger algo, florece al terminar y se mustia cuando se acaba el uso.</p>
+</style><h1>Capu</h1><p class=lede>La mascota de Deiza Code. Un capullo de rosa hecho bloque: ocho píxeles de ancho, el pétalo izquierdo más alto y dos ojos que son huecos. Le brotan brazos de hoja cuando necesita coger algo, florece al terminar y se mustia cuando se acaba el uso. Cambia de forma con el modelo: Gas es pequeño y violeta, Liquid es el de siempre y Solid un granate tallado, más grande y con vetas de oro.</p>
 <div class=row>
 <div>${fs.readFileSync(path.join(OUT, 'capu.svg'), 'utf8').replace('width="160" height="200"', 'width="96" height="120"')}logo</div>
 <div>${fs.readFileSync(path.join(OUT, 'capu.svg'), 'utf8').replace('width="160" height="200"', 'width="32" height="40"')}32 px</div>
@@ -87,7 +108,7 @@ figure svg{width:100%;height:auto} figcaption{color:#8d837a;font-size:12px}
 <div>${fs.readFileSync(path.join(OUT, 'capu-tile.svg'), 'utf8').replace('width="512" height="512"', 'width="120" height="120"')}icono</div>
 <div>${fs.readFileSync(path.join(OUT, 'capu-tile-light.svg'), 'utf8').replace('width="512" height="512"', 'width="120" height="120"')}</div>
 <div>${fs.readFileSync(path.join(OUT, 'capu-tile-dark.svg'), 'utf8').replace('width="512" height="512"', 'width="120" height="120"')}</div>
-</div><div class=grid>`;
+</div><div class=row>${FORMS.map((f) => `<div>${formSVG(f, 5)}${{ gas: 'Gas', liquid: 'Liquid', solid: 'Solid' }[f]}</div>`).join('')}</div><div class=grid>`;
 for (const [n, i, label] of POSES) sheet += `<figure>${C.toSVG(C.frameAt(n, i), { px: 3, crop: all })}<figcaption>${label}</figcaption></figure>`;
 sheet += `</div><div class=pal>` + [['X', 'Cuerpo'], ['x', 'Lado'], ['R', 'Flor'], ['L', 'Hoja'], ['W', 'Crema'], ['d', 'Grafito'], ['Y', 'Ocre']]
   .map(([k, n]) => `<div class=sw><i style="background:${C.PAL[k]}"></i>${n} ${C.PAL[k]}</div>`).join('') + `</div>`;

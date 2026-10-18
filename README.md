@@ -11,9 +11,28 @@ Capu es ocho píxeles de ancho, el pétalo izquierdo más alto que el resto y do
 
 En Deiza Code vive de pie sobre la barra de escritura: pasea un poco, se toma un café de vez en cuando y reacciona a lo que pasa. Teclea en un portátil lleno de pegatinas mientras el agente escribe, levanta la caja de `node_modules` con cada `npm install`, empuja el commit con `git push`, saca confeti cuando pasan los tests y se tapa la cara cuando fallan, le cuenta el bug al pato de goma, se pone el casco en Build, la gorra de piloto en Copilot, despliega el plano en Plan y se transforma en Super Saiyan cuando subes el esfuerzo a Omnisciente. Cuando la tarea termina, florece. Cuando se acaba el uso, se mustia y se pone a escribir el traspaso.
 
+## Un Capu por modelo
+
+<p align="center"><img src="assets/capu-forms.svg" width="420" alt="Capu cambia de forma al cambiar de modelo: Liquid, Solid y Gas"></p>
+
+En Deiza Code, Capu cambia de forma con el modelo que eliges. Al cambiar, su silueta dorada parpadea entre la forma vieja y la nueva, acaba en un destello y después hace la reacción del modelo.
+
+| <img src="assets/forms/gas.svg" height="110" alt="Gas"> | <img src="assets/forms/liquid.svg" height="110" alt="Liquid"> | <img src="assets/forms/solid.svg" height="110" alt="Solid"> |
+| :---: | :---: | :---: |
+| **Gas** | **Liquid** | **Solid** |
+| Pequeño y violeta, con una voluta de vapor sobre el pétalo | El Capu de siempre | Un granate tallado: más grande, tres pétalos en corona, canto iluminado y vetas de oro |
+
+Las tres formas comparten centro, suelo y separación de los ojos, así que todas las escenas sirven para todas: el casco, las gafas, los auriculares o la lata caen siempre en su sitio.
+
+```js
+const player = new Capu.Player(el, { px: 3, form: Capu.formFor('deiza-solid-5') });   // gas | liquid | solid
+const director = new Capu.Director(player);
+director.morph('gas', 'gas');   // evoluciona a Gas y hace la reacción de Gas
+```
+
 ## Escenas
 
-Hay 44 escenas, todas generadas por código desde [`src/capu.js`](src/capu.js). Cada una es un SVG animado en [`assets/scenes/`](assets/scenes).
+Hay 45 escenas, todas generadas por código desde [`src/capu.js`](src/capu.js). Cada una es un SVG animado en [`assets/scenes/`](assets/scenes).
 
 **Trabajando**
 
@@ -34,6 +53,8 @@ Hay 44 escenas, todas generadas por código desde [`src/capu.js`](src/capu.js). 
 | `build` | `copilot` | `plan` | `low` | `mid` | `high` |
 | <img src="assets/scenes/ultra.svg" height="90" alt="ultra"> | <img src="assets/scenes/saiyan.svg" height="90" alt="saiyan"> | <img src="assets/scenes/calm.svg" height="90" alt="calm"> | <img src="assets/scenes/gas.svg" height="90" alt="gas"> | <img src="assets/scenes/liquid.svg" height="90" alt="liquid"> | <img src="assets/scenes/solid.svg" height="90" alt="solid"> |
 | `ultra` | `saiyan` | `calm` | `gas` | `liquid` | `solid` |
+| <img src="assets/scenes/evolve.svg" height="90" alt="evolve"> |
+| `evolve` |
 | <img src="assets/scenes/listen.svg" height="90" alt="listen"> | <img src="assets/scenes/notes.svg" height="90" alt="notes"> | <img src="assets/scenes/photo.svg" height="90" alt="photo"> | <img src="assets/scenes/halt.svg" height="90" alt="halt"> | <img src="assets/scenes/ask.svg" height="90" alt="ask"> | <img src="assets/scenes/trash.svg" height="90" alt="trash"> |
 | `listen` | `notes` | `photo` | `halt` | `ask` | `trash` |
 
@@ -100,14 +121,15 @@ console.log(Capu.toANSI(Capu.frameAt('idle', 0)).join('\n'));
 
 | | |
 |---|---|
-| `Capu.frame(scene, t)` | Rejilla de colores del instante `t` (ms) de una escena |
-| `Capu.frameAt(scene, i)` | El fotograma `i` |
+| `Capu.frame(scene, t, form)` | Rejilla de colores del instante `t` (ms) de una escena, en la forma `gas`, `liquid` (por defecto) o `solid` |
+| `Capu.frameAt(scene, i, form, from)` | El fotograma `i`; `from` es la forma de la que viene (solo la usa `evolve`) |
+| `Capu.formFor(model)` / `Capu.FORMS` | La forma de un modelo (`deiza-gas…` → `gas`, `deiza-solid…` → `solid`, el resto `liquid`) y las tres formas |
 | `Capu.toSVG(grid, { px, crop, mono, fluid, title, bleed })` | SVG pixel-perfect; `bleed` dibuja también lo que se sale del recorte |
 | `Capu.toANSI(grid, { crop, indent })` | Líneas para la terminal (medios bloques, color real) |
 | `Capu.base({ eyes, top })` | La silueta base 8×10 |
-| `Capu.sceneBox(names, pad)` / `centeredBox(names, pad)` | Recorte que contiene todos los fotogramas |
-| `new Capu.Player(el, { px, crop, scene, bleed })` | Anima dentro de un elemento: `play(scene, onEnd)`, `stop()`. Las escenas `fx` (como `saiyan`) se salen de su caja; `bleed: false` las recorta |
-| `new Capu.Director(player, { sleepAfter })` | `set(state)`, `react(scene, after)`, `poke()`, `pause()`, `resume()` |
+| `Capu.sceneBox(names, pad, forms)` / `centeredBox(names, pad, forms)` | Recorte que contiene todos los fotogramas (de las formas que le pases) |
+| `new Capu.Player(el, { px, crop, scene, bleed, form })` | Anima dentro de un elemento: `play(scene, onEnd)`, `setForm(form)`, `stop()`. Las escenas `fx` (como `saiyan` o `evolve`) se salen de su caja; `bleed: false` las recorta |
+| `new Capu.Director(player, { sleepAfter })` | `set(state)`, `react(scene, after)`, `morph(form, scene)`, `poke()`, `pause()`, `resume()` |
 
 ## Regenerar los assets
 
@@ -122,6 +144,11 @@ node scripts/build-gallery.js    # un SVG animado por escena (assets/scenes/)
 | Cuerpo | Lado | Flor | Hoja | Crema | Grafito | Ocre |
 |---|---|---|---|---|---|---|
 | `#C04A56` | `#9A3743` | `#F09AA6` | `#94B07C` | `#F4ECE1` | `#5B5450` | `#E7B447` |
+
+| | Cuerpo | Lado | Flor | Detalle |
+|---|---|---|---|---|
+| Gas | `#9C6CCB` | `#7A4CA8` | `#EEDCFB` | vapor `#D9C5F2` |
+| Solid | `#A9333F` | `#7B2130` | `#F09AA6` | canto `#C9525F`, vetas `#E7B447` |
 
 ## Licencia
 

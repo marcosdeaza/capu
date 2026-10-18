@@ -49,12 +49,15 @@
 <body>
 <main>
   <h1>Capu</h1>
-  <p class="lede">La mascota de <a href="https://deiza.org/code">Deiza Code</a>. Un capullo de rosa hecho bloque: ocho píxeles de ancho, el pétalo izquierdo más alto y dos ojos que son huecos. Vive de pie sobre la barra de escritura, pasea, hace de las suyas y reacciona a lo que haces. Haz clic en él.</p>
+  <p class="lede">La mascota de <a href="https://deiza.org/code">Deiza Code</a>. Un capullo de rosa hecho bloque: ocho píxeles de ancho, el pétalo izquierdo más alto y dos ojos que son huecos. Vive de pie sobre la barra de escritura, pasea, hace de las suyas y reacciona a lo que haces. Cambia de forma con el modelo: Gas es pequeño y violeta, Liquid el de siempre y Solid un granate tallado, más grande y con vetas de oro. Haz clic en él.</p>
 
   <div class="stage-wrap">
     <div class="now" id="now">idle</div>
     <div class="bar"><span class="ph">Pide un cambio, un arreglo o una app entera…</span><div id="capu" title="Capu"></div></div>
   </div>
+
+  <div class="lbl">Modelo</div>
+  <div class="row" id="forms"></div>
 
   <div class="lbl">Lo que hace el agente</div>
   <div class="row" id="states"></div>
@@ -73,10 +76,11 @@
 <pre>&lt;script src="capu.js"&gt;&lt;/script&gt;
 &lt;div id="capu"&gt;&lt;/div&gt;
 &lt;script&gt;
-  const player = new Capu.Player(document.getElementById('capu'), { px: 3 });
+  const player = new Capu.Player(document.getElementById('capu'), { px: 3, form: Capu.formFor('deiza-solid-5') });
   const director = new Capu.Director(player);
   director.set('writing');          // thinking, reading, running, web, npm, git, tests…
   director.react('saiyan');         // transformación de unos segundos y vuelve a lo que hacía
+  director.morph('gas', 'gas');     // cambio de modelo: evoluciona a Gas y hace su reacción
 &lt;/script&gt;</pre>
 
   <footer>Hecho por <a href="https://github.com/marcosdeaza">Marcos de Aza</a> para <a href="https://deiza.org">Deiza</a>. Código y sprites bajo licencia MIT: <a href="https://github.com/marcosdeaza/capu">github.com/marcosdeaza/capu</a>.</footer>
@@ -85,7 +89,8 @@
 <script>
   const el = document.getElementById('capu');
   const now = document.getElementById('now');
-  const STAND = (() => { const b = Capu.centeredBox(Object.keys(Capu.SCENES), 0); return { x: b.x, y: b.y, w: b.w, h: 28 - b.y }; })();
+  const FORMS = Object.keys(Capu.FORMS);
+  const STAND = (() => { const b = Capu.centeredBox(Object.keys(Capu.SCENES), 0, FORMS); return { x: b.x, y: b.y, w: b.w, h: 28 - b.y }; })();
   const player = new Capu.Player(el, { px: 3, crop: STAND });
   const director = new Capu.Director(player, { sleepAfter: 90000 });
   const show = (t) => { now.textContent = t; };
@@ -104,16 +109,31 @@
   }
 
   const grid = document.getElementById('grid');
-  const box = Capu.sceneBox(Object.keys(Capu.SCENES), 1);
-  for (const name of Object.keys(Capu.SCENES)) {
+  const cells = [];
+  for (const name of Object.keys(Capu.SCENES).filter((n) => n !== 'evolve')) {
     const cell = document.createElement('div');
     cell.className = 'cell';
     cell.innerHTML = `<div class="art"></div><span>${name}</span>`;
     const art = cell.querySelector('.art');
-    const p = new Capu.Player(art, { px: 2, crop: Capu.centeredBox([name], 1), scene: name });
+    const p = new Capu.Player(art, { px: 2, crop: Capu.centeredBox([name], 1, FORMS), scene: name });
+    cells.push(p);
     if (!Capu.SCENES[name].loop) setInterval(() => p.play(name, () => {}), Capu.sceneDuration(name) + 1200);
     cell.onclick = () => { director.react(name); show(name); };
     grid.append(cell);
+  }
+
+  const formsRow = document.getElementById('forms');
+  for (const [f, label] of [['gas', 'Gas'], ['liquid', 'Liquid'], ['solid', 'Solid']]) {
+    const b = document.createElement('button');
+    b.textContent = label;
+    b.setAttribute('aria-pressed', String(f === 'liquid'));
+    b.onclick = () => {
+      for (const o of formsRow.children) o.setAttribute('aria-pressed', String(o === b));
+      director.morph(f, f);
+      for (const p of cells) p.setForm(f);
+      show(f);
+    };
+    formsRow.append(b);
   }
 
   document.getElementById('ssj').onclick = () => { director.react('saiyan', () => show(director.state)); show('saiyan'); };

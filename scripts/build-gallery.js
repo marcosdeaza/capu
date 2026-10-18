@@ -6,9 +6,12 @@ const path = require('path');
 const OUT = path.join(__dirname, '..', 'assets', 'scenes');
 fs.mkdirSync(OUT, { recursive: true });
 
+// evolve needs two forms: the gallery shows Liquid turning into Solid
+const FORM = { evolve: ['solid', 'liquid'] };
 function animated(name, px) {
-  const box = C.centeredBox([name], 1);
-  const frames = C.SCENES[name].frames.map((f, i) => [f[0], C.frameAt(name, i)]);
+  const [form, from] = FORM[name] || [];
+  const box = C.centeredBox([name], 1, form ? [from, form] : undefined);
+  const frames = C.SCENES[name].frames.map((f, i) => [f[0], C.frameAt(name, i, form, from)]);
   const total = frames.reduce((a, f) => a + f[0], 0);
   let t = 0, groups = '', css = '';
   frames.forEach(([ms, g], k) => {
