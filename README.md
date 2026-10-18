@@ -22,10 +22,17 @@ En Deiza Code, Capu cambia de forma con el modelo que eliges. Al cambiar, su sil
 | **Gas** | **Liquid** | **Solid** |
 | Pequeño y violeta, con una voluta de vapor sobre el pétalo | El Capu de siempre | Un granate tallado: más grande, tres pétalos en corona, canto iluminado y vetas de oro |
 
-Las tres formas comparten centro, suelo y separación de los ojos, así que todas las escenas sirven para todas: el casco, las gafas, los auriculares o la lata caen siempre en su sitio.
+Los modelos retirados que se siguen pudiendo usar (Gas 4.5, Liquid 5.1 y los que vengan) llevan la misma forma en **modo abuelo**: color apagado, cejas blancas caídas, monóculo de oro con cadena y bastón.
+
+| <img src="assets/forms/gas-old.svg" height="110" alt="Gas 4.5, modo abuelo"> | <img src="assets/forms/liquid-old.svg" height="110" alt="Liquid 5.1, modo abuelo"> | <img src="assets/forms/solid-old.svg" height="110" alt="Solid, modo abuelo"> |
+| :---: | :---: | :---: |
+| `gas:old` | `liquid:old` | `solid:old` |
+
+Las formas comparten centro, suelo y separación de los ojos, así que todas las escenas sirven para todas: el casco, las gafas, los auriculares o la lata caen siempre en su sitio.
 
 ```js
 const player = new Capu.Player(el, { px: 3, form: Capu.formFor('deiza-solid-5') });   // gas | liquid | solid
+player.setForm(Capu.formFor('deiza-gas-4.5', { legacy: true }));                     // 'gas:old', modo abuelo
 const director = new Capu.Director(player);
 director.morph('gas', 'gas');   // evoluciona a Gas y hace la reacción de Gas
 ```
@@ -123,7 +130,7 @@ console.log(Capu.toANSI(Capu.frameAt('idle', 0)).join('\n'));
 |---|---|
 | `Capu.frame(scene, t, form)` | Rejilla de colores del instante `t` (ms) de una escena, en la forma `gas`, `liquid` (por defecto) o `solid` |
 | `Capu.frameAt(scene, i, form, from)` | El fotograma `i`; `from` es la forma de la que viene (solo la usa `evolve`) |
-| `Capu.formFor(model)` / `Capu.FORMS` | La forma de un modelo (`deiza-gas…` → `gas`, `deiza-solid…` → `solid`, el resto `liquid`) y las tres formas |
+| `Capu.formFor(model, { legacy })` / `Capu.FORMS` | La forma de un modelo (`deiza-gas…` → `gas`, `deiza-solid…` → `solid`, el resto `liquid`; con `legacy`, la misma en modo abuelo `:old`) y las tres formas |
 | `Capu.toSVG(grid, { px, crop, mono, fluid, title, bleed })` | SVG pixel-perfect; `bleed` dibuja también lo que se sale del recorte |
 | `Capu.toANSI(grid, { crop, indent })` | Líneas para la terminal (medios bloques, color real) |
 | `Capu.base({ eyes, top })` | La silueta base 8×10 |

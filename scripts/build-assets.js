@@ -73,6 +73,9 @@ fs.mkdirSync(path.join(OUT, 'forms'), { recursive: true });
 const formBox = C.sceneBox(['idle'], 1, FORMS);
 const formSVG = (f, px) => C.toSVG(C.frameAt('idle', 0, f), { px, crop: formBox, title: `Capu ${f}` });
 for (const f of FORMS) w(`forms/${f}.svg`, formSVG(f, 8));
+// retired models that can still be used: the same form in old mode (faded, brows, monocle, cane)
+const oldBox = C.sceneBox(['idle'], 1, FORMS.flatMap((f) => [f, `${f}:old`]));
+for (const f of FORMS) w(`forms/${f}-old.svg`, C.toSVG(C.frameAt('idle', 0, `${f}:old`), { px: 8, crop: oldBox, title: `Capu ${f} (modelo anterior)` }));
 {
   const gap = 6, inner = (f) => formSVG(f, 1).replace(/^<svg[^>]*>(<title>[^<]*<\/title>)?/, '').replace(/<\/svg>$/, '');
   const groups = FORMS.map((f, i) => `<g transform="translate(${i * (formBox.w + gap)} 0)">${inner(f)}</g>`).join('');
@@ -108,7 +111,7 @@ figure svg{width:100%;height:auto} figcaption{color:#8d837a;font-size:12px}
 <div>${fs.readFileSync(path.join(OUT, 'capu-tile.svg'), 'utf8').replace('width="512" height="512"', 'width="120" height="120"')}icono</div>
 <div>${fs.readFileSync(path.join(OUT, 'capu-tile-light.svg'), 'utf8').replace('width="512" height="512"', 'width="120" height="120"')}</div>
 <div>${fs.readFileSync(path.join(OUT, 'capu-tile-dark.svg'), 'utf8').replace('width="512" height="512"', 'width="120" height="120"')}</div>
-</div><div class=row>${FORMS.map((f) => `<div>${formSVG(f, 5)}${{ gas: 'Gas', liquid: 'Liquid', solid: 'Solid' }[f]}</div>`).join('')}</div><div class=grid>`;
+</div><div class=row>${FORMS.map((f) => `<div>${formSVG(f, 5)}${{ gas: 'Gas', liquid: 'Liquid', solid: 'Solid' }[f]}</div>`).join('')}${['gas', 'liquid'].map((f) => `<div>${C.toSVG(C.frameAt('idle', 0, `${f}:old`), { px: 5, crop: oldBox })}${{ gas: 'Gas 4.5', liquid: 'Liquid 5.1' }[f]} (anterior)</div>`).join('')}</div><div class=grid>`;
 for (const [n, i, label] of POSES) sheet += `<figure>${C.toSVG(C.frameAt(n, i), { px: 3, crop: all })}<figcaption>${label}</figcaption></figure>`;
 sheet += `</div><div class=pal>` + [['X', 'Cuerpo'], ['x', 'Lado'], ['R', 'Flor'], ['L', 'Hoja'], ['W', 'Crema'], ['d', 'Grafito'], ['Y', 'Ocre']]
   .map(([k, n]) => `<div class=sw><i style="background:${C.PAL[k]}"></i>${n} ${C.PAL[k]}</div>`).join('') + `</div>`;

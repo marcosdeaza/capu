@@ -49,7 +49,7 @@
 <body>
 <main>
   <h1>Capu</h1>
-  <p class="lede">La mascota de <a href="https://deiza.org/code">Deiza Code</a>. Un capullo de rosa hecho bloque: ocho píxeles de ancho, el pétalo izquierdo más alto y dos ojos que son huecos. Vive de pie sobre la barra de escritura, pasea, hace de las suyas y reacciona a lo que haces. Cambia de forma con el modelo: Gas es pequeño y violeta, Liquid el de siempre y Solid un granate tallado, más grande y con vetas de oro. Haz clic en él.</p>
+  <p class="lede">La mascota de <a href="https://deiza.org/code">Deiza Code</a>. Un capullo de rosa hecho bloque: ocho píxeles de ancho, el pétalo izquierdo más alto y dos ojos que son huecos. Vive de pie sobre la barra de escritura, pasea, hace de las suyas y reacciona a lo que haces. Cambia de forma con el modelo: Gas es pequeño y violeta, Liquid el de siempre y Solid un granate tallado, más grande y con vetas de oro. Los modelos anteriores que se siguen pudiendo usar lo llevan en modo abuelo, con bastón y monóculo. Haz clic en él.</p>
 
   <div class="stage-wrap">
     <div class="now" id="now">idle</div>
@@ -89,7 +89,7 @@
 <script>
   const el = document.getElementById('capu');
   const now = document.getElementById('now');
-  const FORMS = Object.keys(Capu.FORMS);
+  const FORMS = Object.keys(Capu.FORMS).flatMap((f) => [f, `${f}:old`]);
   const STAND = (() => { const b = Capu.centeredBox(Object.keys(Capu.SCENES), 0, FORMS); return { x: b.x, y: b.y, w: b.w, h: 28 - b.y }; })();
   const player = new Capu.Player(el, { px: 3, crop: STAND });
   const director = new Capu.Director(player, { sleepAfter: 90000 });
@@ -123,13 +123,13 @@
   }
 
   const formsRow = document.getElementById('forms');
-  for (const [f, label] of [['gas', 'Gas'], ['liquid', 'Liquid'], ['solid', 'Solid']]) {
+  for (const [f, label] of [['gas', 'Gas'], ['liquid', 'Liquid'], ['solid', 'Solid'], ['gas:old', 'Gas 4.5 (anterior)'], ['liquid:old', 'Liquid 5.1 (anterior)']]) {
     const b = document.createElement('button');
     b.textContent = label;
     b.setAttribute('aria-pressed', String(f === 'liquid'));
     b.onclick = () => {
       for (const o of formsRow.children) o.setAttribute('aria-pressed', String(o === b));
-      director.morph(f, f);
+      director.morph(f, f.split(':')[0]);
       for (const p of cells) p.setForm(f);
       show(f);
     };
