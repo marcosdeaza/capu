@@ -12,7 +12,7 @@ function slotGroups(slotIdx, scenes, dx, dy) {
     t += ms;
     const inner = C.toSVG(grid, { px: 1, crop: box }).replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
     const cls = `s${slotIdx}f${k}`;
-    g += `<g class="${cls}">${inner}</g>`;
+    g += `<g class="${cls}" visibility="${k === 0 ? 'visible' : 'hidden'}">${inner}</g>`;
     css += `.${cls}{animation:k${cls} ${total}ms step-end infinite}@keyframes k${cls}{0%,${a}%{visibility:hidden}${a}%,${b}%{visibility:visible}${b}%,100%{visibility:hidden}}`;
   });
   return { svg: `<g transform="translate(${dx} ${dy})">${g}</g>`, css, box };
@@ -26,7 +26,7 @@ function compose({ w, h, bg, slots, ground, title }) {
     body += r.svg; css += r.css;
   });
   const g = ground ? `<rect x="0" y="${ground.y}" width="${w}" height="${h - ground.y}" fill="${ground.fill}"/>` : '';
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w * 10}" height="${h * 10}" shape-rendering="crispEdges" role="img"><title>${title}</title><style>g[class]{visibility:hidden}${css}@media (prefers-reduced-motion:reduce){g[class]{animation:none!important}${slots.map((_, i) => `.s${i}f0`).join(',')}{visibility:visible}}</style><rect width="${w}" height="${h}" fill="${bg}"/>${g}${body}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w * 10}" height="${h * 10}" shape-rendering="crispEdges" role="img"><title>${title}</title><style>${css}@media (prefers-reduced-motion:reduce){g[class]{animation:none!important}}</style><rect width="${w}" height="${h}" fill="${bg}"/>${g}${body}</svg>`;
 }
 // node scripts/capu/build-art.js <carpeta>: portada 16:9 y mural 21:9 animados para noticias y anuncios
 const out = process.argv[2] || require('path').join(__dirname, '..', 'assets');

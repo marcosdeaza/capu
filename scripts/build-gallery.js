@@ -15,10 +15,10 @@ function animated(name, px) {
     const a = (t / total * 100).toFixed(3), b = ((t + ms) / total * 100).toFixed(3);
     t += ms;
     const inner = C.toSVG(g, { px: 1, crop: box }).replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
-    groups += `<g class="f${k}">${inner}</g>`;
+    groups += `<g class="f${k}" visibility="${k === 0 ? 'visible' : 'hidden'}">${inner}</g>`;
     css += `.f${k}{animation:k${k} ${total}ms step-end infinite}@keyframes k${k}{0%,${a}%{visibility:hidden}${a}%,${b}%{visibility:visible}${b}%,100%{visibility:hidden}}`;
   });
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${box.w} ${box.h}" width="${box.w * px}" height="${box.h * px}" shape-rendering="crispEdges" role="img"><title>Capu: ${name}</title><style>g[class]{visibility:hidden}${css}@media (prefers-reduced-motion:reduce){g[class]{animation:none!important}.f0{visibility:visible}}</style>${groups}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${box.w} ${box.h}" width="${box.w * px}" height="${box.h * px}" shape-rendering="crispEdges" role="img"><title>Capu: ${name}</title><style>${css}@media (prefers-reduced-motion:reduce){g[class]{animation:none!important}}</style>${groups}</svg>`;
 }
 const names = Object.keys(C.SCENES);
 for (const n of names) fs.writeFileSync(path.join(OUT, `${n}.svg`), animated(n, 5));

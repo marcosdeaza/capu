@@ -53,10 +53,10 @@ function animated(scenes, name, px) {
     const a = (t / total * 100).toFixed(4), b = ((t + ms) / total * 100).toFixed(4);
     t += ms;
     const inner = C.toSVG(g, { px: 1, crop: box }).replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
-    groups += `<g class="f${k}">${inner}</g>`;
+    groups += `<g class="f${k}" visibility="${k === 0 ? 'visible' : 'hidden'}">${inner}</g>`;
     css += `.f${k}{animation-name:k${k}}@keyframes k${k}{0%,${a}%{visibility:hidden}${a}%,${b}%{visibility:visible}${b}%,100%{visibility:hidden}}`;
   });
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${box.w} ${box.h}" width="${box.w * px}" height="${box.h * px}" shape-rendering="crispEdges" role="img"><title>Capu</title><style>g{visibility:hidden;animation-duration:${total}ms;animation-iteration-count:infinite;animation-timing-function:step-end}${css}@media (prefers-reduced-motion:reduce){g{animation:none}.f0{visibility:visible}}</style>${groups}</svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${box.w} ${box.h}" width="${box.w * px}" height="${box.h * px}" shape-rendering="crispEdges" role="img"><title>Capu</title><style>g[class]{animation-duration:${total}ms;animation-iteration-count:infinite;animation-timing-function:step-end}${css}@media (prefers-reduced-motion:reduce){g[class]{animation:none!important}}</style>${groups}</svg>`;
   w(name, svg);
   return { frames: frames.length, total, bytes: svg.length };
 }
